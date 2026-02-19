@@ -1,18 +1,28 @@
 #!/bin/bash
+set -eux
 
 # Ensure we have /workspace in all scenarios
 mkdir -p /workspace
 
 if [[ ! -d /workspace/ai-toolkit ]]; then
-	# If we don't already have /workspace/ai-toolkit, copy it there without preserving ownership
-	echo "Copying ai-toolkit to /workspace for persistence, this might take a while"
+	echo "Installing ai-toolkit to /workspace, this might take a while"
 	mkdir -p /workspace/ai-toolkit
-	cp -a --no-preserve=ownership /ai-toolkit/. /workspace/ai-toolkit/
-	# Remove the original to free space inside the container layer
-	rm -rf /ai-toolkit
+
+	git clone https://github.com/ostris/ai-toolkit.git /workspace/ai-toolkit
+    cd /wokspace/ai-toolkit && git submodule update --init --recursive
+    pip install --no-cache-dir -r requirements.txt
+
+	cd /workspace/ai-toolkit/ui
+    npm ci || npm install
+    npm run update_db
+    npm run build
+
+	# cp -a --no-preserve=ownership /ai-toolkit/. /workspace/ai-toolkit/
+	# # Remove the original to free space inside the container layer
+	# rm -rf /ai-toolkit
 else
 	# otherwise delete the default ai-toolkit folder which is always re-created on pod start from the Docker
-	rm -rf /ai-toolkit
+	# rm -rf /ai-toolkit
 fi
 
 # Then link /ai-toolkit folder to /workspace so it's available in that familiar location as well
