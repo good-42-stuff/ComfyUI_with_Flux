@@ -90,6 +90,30 @@ EXPOSE 8888
 EXPOSE 7860
 EXPOSE 8675
 
+# Download scripts for additional models
+COPY --chmod=755 download_Controlnet.sh /download_Controlnet.sh
+COPY --chmod=755 download_fp16.sh /download_fp16.sh
+COPY --chmod=755 download_LDSR.sh /download_LDSR.sh
+COPY --chmod=755 download_SUPIR.sh /download_SUPIR.sh
+COPY --chmod=755 download_Florence-2.sh /download_Florence-2.sh
+COPY --chmod=755 download_Upscalers.sh /download_Upscalers.sh
+COPY --chmod=755 download_Outpainting.sh /download_Outpainting.sh
+COPY --chmod=755 download_Workflows.sh /download_Workflows.sh
+COPY --chmod=755 update_Workflows.sh /update_Workflows.sh
+COPY --chmod=755 download_ALL.sh /download_ALL.sh
+COPY --chmod=755 make_venv.sh /make_venv.sh
+COPY --chmod=755 download_Files.sh /download_Files.sh
+COPY --chmod=755 download_Flux2.sh /download_Flux2.sh
+COPY --chmod=755 download_wan2.1.sh /download_wan2.1.sh
+COPY --chmod=755 download_wan2.2.sh /download_wan2.2.sh
+COPY --chmod=755 download_wan2.1_InfiniteTalk.sh /download_wan2.1_InfiniteTalk.sh
+COPY --chmod=755 download_Qwen_bf16.sh /download_Qwen_bf16.sh
+COPY --chmod=755 download_Qwen_fp8.sh /download_Qwen_fp8.sh
+COPY --chmod=755 download_VibeVoice.sh /download_VibeVoice.sh
+COPY --chmod=755 download_z-image.sh /download_z-image.sh
+COPY --chmod=755 disable_mixlab.sh /disable_mixlab.sh
+COPY --chmod=755 download_LTX2.sh /download_LTX2.sh
+
 # fix missing directory for old network volumes
 RUN mkdir -p /opt/venv/lib/python3.10/site-packages/comfyui_workflow_templates/templates
 
