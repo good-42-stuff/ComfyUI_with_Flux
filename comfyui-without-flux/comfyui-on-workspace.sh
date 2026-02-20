@@ -61,9 +61,6 @@ if [[ ! -d /workspace/ComfyUI ]]; then
     wget "https://huggingface.co/ezioruan/inswapper_128.onnx/resolve/main/inswapper_128.onnx?download=true" -O /workspace/ComfyUI/models/insightface/inswapper_128.onnx
     wget "https://huggingface.co/Comfy-Org/stable-diffusion-v1-5-archive/resolve/main/v1-5-pruned-emaonly-fp16.safetensors?download=true" -O /workspace/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors
 
-    cp *.sh /
-    chmod 755 /*.sh
-
     echo "Syncing custom workflows and input assets..."
 
     cp -r /workflows/* /workspace/ComfyUI/user/default/workflows/

@@ -75,6 +75,13 @@ ENV PATH="/opt/venv/bin:/usr/local/cuda/bin:${PATH}"
 # Copy Python environment from builder
 COPY --from=builder /opt/venv /opt/venv
 
+# Startup and helper scripts
+COPY --chmod=755 start-ssh-only.sh /start.sh
+COPY --chmod=755 start-original.sh /start-original.sh
+COPY --chmod=755 comfyui-on-workspace.sh /comfyui-on-workspace.sh
+COPY --chmod=755 ai-toolkit-on-workspace.sh /ai-toolkit-on-workspace.sh
+COPY --chmod=755 check_files.sh /check_files.sh
+
 WORKDIR /workspace
 
 # Service ports
