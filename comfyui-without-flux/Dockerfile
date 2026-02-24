@@ -58,7 +58,8 @@ RUN apt-get update -y && \
 
 # Install Node.js 22 LTS for AI-Toolkit runtime needs
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get update -y && apt-get install -y --no-install-recommends nodejs && \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends nodejs && \
     npm -v && node -v && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -78,7 +79,6 @@ ENV PATH="/opt/venv/bin:/usr/local/cuda/bin:${PATH}"
 COPY --from=builder /opt/venv /opt/venv
 
 # Startup and helper scripts
-COPY --chmod=755 scripts/start-ssh-only.sh /start.sh
 COPY --chmod=755 scripts/ /
 
 # Fix missing directory for old network volumes

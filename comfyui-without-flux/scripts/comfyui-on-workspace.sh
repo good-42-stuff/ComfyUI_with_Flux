@@ -41,9 +41,10 @@ NODES=(
 )
 
 export WORKSPACE="/workspace"
+export PYTHONLIBS="${WORKSPACE}/pythonlibs"
+export PYTHONPATH="${PYTHONPATH:-}:${PYTHONLIBS}"
 export COMFYUI="${WORKSPACE}/ComfyUI"
 
-mkdir -p "${WORKSPACE}"
 
 if [[ ! -d "${COMFYUI}" ]]; then
 	echo "Installing ComfyUI to ${WORKSPACE}, this might take a while"
@@ -100,9 +101,13 @@ if [[ ! -d "${COMFYUI}" ]]; then
     chmod 644 "${COMFYUI}/web/templates/default.json"
 fi
 
-pip install --no-cache-dir -r "${COMFYUI}/requirements.txt" \
-    einops==0.8.0 \
-    sageattention==1.0.6
+if [[ ! -d "${PYTHONLIBS}" ]]; then
+    mkdir "${PYTHONLIBS}"
+    pip install --target="${PYTHONLIBS}" --no-cache-dir \
+        -r "${COMFYUI}/requirements.txt" \
+        einops==0.8.0 \
+        sageattention==1.0.6
+fi
 
 cd "${COMFYUI}/custom_nodes"
 python x-flux-comfyui/setup.py
