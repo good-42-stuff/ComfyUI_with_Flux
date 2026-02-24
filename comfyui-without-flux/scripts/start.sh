@@ -5,11 +5,9 @@ echo "pod started"
 if [[ $PUBLIC_KEY ]]
 then
     mkdir -p ~/.ssh
+    echo $PUBLIC_KEY >> ~/.ssh/authorized_keys
     chmod 700 ~/.ssh
-    cd ~/.ssh
-    echo $PUBLIC_KEY >> authorized_keys
-    chmod 700 -R ~/.ssh
-    cd /
+    chmod 600 ~/.ssh/authorized_keys
     service ssh start
 fi
 

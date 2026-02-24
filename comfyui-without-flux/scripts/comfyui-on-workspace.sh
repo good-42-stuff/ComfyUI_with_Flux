@@ -1,7 +1,6 @@
 #!/bin/bash
 set -eux
 
-
 NODES=(
     "https://github.com/ltdrdata/ComfyUI-Manager.git"
     "https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git"
@@ -41,10 +40,7 @@ NODES=(
 )
 
 export WORKSPACE="/workspace"
-export PYTHONLIBS="${WORKSPACE}/pythonlibs"
-export PYTHONPATH="${PYTHONPATH:-}:${PYTHONLIBS}"
 export COMFYUI="${WORKSPACE}/ComfyUI"
-
 
 if [[ ! -d "${COMFYUI}" ]]; then
 	echo "Installing ComfyUI to ${WORKSPACE}, this might take a while"
@@ -68,13 +64,13 @@ if [[ ! -d "${COMFYUI}" ]]; then
 
     wget "https://github.com/comfyanonymous/ComfyUI_examples/blob/master/flux/flux_dev_example.png" \
         -P "${COMFYUI}"
-    
+
     wget "https://huggingface.co/Bingsu/adetailer/resolve/main/face_yolov8m.pt?download=true" \
         -O "${COMFYUI}/models/ultralytics/bbox/face_yolov8m.pt"
-    
+
     wget "https://huggingface.co/ezioruan/inswapper_128.onnx/resolve/main/inswapper_128.onnx?download=true" \
         -O "${COMFYUI}/models/insightface/inswapper_128.onnx"
-    
+
     wget "https://huggingface.co/Comfy-Org/stable-diffusion-v1-5-archive/resolve/main/v1-5-pruned-emaonly-fp16.safetensors?download=true" \
         -O "${COMFYUI}/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors"
 
@@ -82,13 +78,13 @@ if [[ ! -d "${COMFYUI}" ]]; then
 
     cp -r /workflows/* "${COMFYUI}/user/default/workflows/"
     chmod -R 644 "${COMFYUI}/user/default/workflows/"
-    
+
     cp /comfy.settings.json "${COMFYUI}/user/default/comfy.settings.json"
     chmod 644 "${COMFYUI}/user/default/comfy.settings.json"
 
-    cp *.png "${COMFYUI}/input/"
-    cp *.mp4 "${COMFYUI}/input/"
-    cp *.mp3 "${COMFYUI}/input/"
+    cp assets/*.png "${COMFYUI}/input/"
+    cp assets/*.mp4 "${COMFYUI}/input/"
+    cp assets/*.mp3 "${COMFYUI}/input/"
     chmod -R 644 "${COMFYUI}/input/"
 
     cp defaultGraph.json /defaultGraph.json
@@ -101,13 +97,10 @@ if [[ ! -d "${COMFYUI}" ]]; then
     chmod 644 "${COMFYUI}/web/templates/default.json"
 fi
 
-if [[ ! -d "${PYTHONLIBS}" ]]; then
-    mkdir "${PYTHONLIBS}"
-    pip install --target="${PYTHONLIBS}" --no-cache-dir \
-        -r "${COMFYUI}/requirements.txt" \
-        einops==0.8.0 \
-        sageattention==1.0.6
-fi
+pip install --no-cache-dir --upgrade-strategy only-if-needed \
+    -r "${COMFYUI}/requirements.txt" \
+    einops==0.8.0 \
+    sageattention==1.0.6
 
 cd "${COMFYUI}/custom_nodes"
 python x-flux-comfyui/setup.py
