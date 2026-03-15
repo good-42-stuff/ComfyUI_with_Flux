@@ -1,5 +1,6 @@
 ARG BUILDER_BASE=nvidia/cuda:12.8.0-devel-ubuntu22.04
 ARG RUNTIME_BASE=nvidia/cuda:12.8.0-runtime-ubuntu22.04
+# ARG RUNTIME_BASE=nvidia/cuda:12.8.0-base-ubuntu22.04
 
 # Builder stage =====================
 FROM ${BUILDER_BASE} AS builder
@@ -27,7 +28,7 @@ ENV PATH="${VENV_PATH}/bin:${PATH}"
 # Install PyTorch with CUDA 12.8 in the venv
 RUN pip install --no-cache-dir -U \
     torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu128 && \
-    pip install --no-cache-dir jupyterlab && \
+    pip install --no-cache-dir jupyterlab opencv-python-headless && \
     pip install --no-cache-dir -U albumentations
 
 # Clean python cache
@@ -67,13 +68,28 @@ ENV PATH="/opt/venv/bin:/usr/local/cuda/bin:${PATH}"
 # Copy Python environment from builder
 COPY --from=builder /opt/venv /opt/venv
 
-# Startup and helper scripts
-COPY --chmod=755 scripts/ /
-
 # Fix missing directory for old network volumes
 RUN mkdir -p /opt/venv/lib/python3.10/site-packages/comfyui_workflow_templates/templates
 
 WORKDIR /workspace
+
+# Startup and helper scripts
+COPY --chmod=755 scripts/ scripts/
+COPY --chmod=755 scripts/start.sh /start.sh
+COPY custom-nodes.conf .
+
+RUN WORKSPACE=/opt ./scripts/install-comfyui.sh && \
+    # Consolidate OpenCV
+    # pip uninstall -y opencv-python opencv-contrib-python opencv-python-headless && \
+    # pip install --no-cache-dir opencv-python-headless && \
+    # Remove .git
+    find /opt/ComfyUI/custom_nodes -name ".git" -type d -exec rm -rf {} + && \
+    # Build stuff
+    find /opt/venv/lib/python3.10/site-packages/ -type f \( -name "*.a" -o -name "*.h" -o -name "*.hpp" \) -delete && \
+    # Remove caches
+    find /opt/venv -type d -name "__pycache__" -exec rm -rf {} + && \
+    npm cache clean --force && \
+    rm -rf /root/.cache/pip /root/.cache/uv /root/.npm
 
 # Service ports
 EXPOSE 8188 8888 7860 8675
